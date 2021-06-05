@@ -1,0 +1,28 @@
+version: '3'
+services:
+
+  home-assistant:
+    image: homeassistant/home-assistant
+    env_file: config/home-assistant.env
+    environment:
+      TZ: ${TZ:-UTC}
+    network_mode: host
+    privileged: true
+    volumes:
+      - ./volumes/home-assistant:/config
+    labels:
+      com.centurylinklabs.watchtower.scope: home-assistant
+    restart: unless-stopped
+
+  watchtower:
+    image: containrrr/watchtower
+    env_file: config/watchtower.env
+    environment:
+      WATCHTOWER_SCOPE: home-assistant
+      TZ: ${TZ:-UTC}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      com.centurylinklabs.watchtower.scope: home-assistant
+    restart: unless-stopped
+
